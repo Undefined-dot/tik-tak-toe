@@ -1,0 +1,32 @@
+:root {
+    --primary: #F5F5F5;
+    --secondary: #4B6A86;
+    --cross: #3284D2;
+    --circle: #39BBD3;
+    --primarytext: #000000;
+    --subtext: #B4BDC7;
+    --authback: #fff;
+
+    .darkMode {
+        --primary: #080808;
+        --secondary: #4B6A86;
+        --cross: #3284D2;
+        --circle: #39BBD3;
+        --primarytext: #000000;
+        --subtext: #B4BDC7;
+        --authback: #080808;
+    }
+}
+  
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+    font-family: Poppins; 
+}
