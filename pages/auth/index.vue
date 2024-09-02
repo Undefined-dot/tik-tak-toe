@@ -227,10 +227,6 @@
     }
   }
 
-  .back .svg-1 {
-   
-  }
-
   @keyframes bounce {
     0% {
       transform: rotate(0)
