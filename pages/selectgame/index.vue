@@ -77,6 +77,7 @@ function copy () {
         display: flex;
         flex-direction: column;
         align-items: center;
+        justify-content: center;
     }
     .container h1{
         margin-bottom: 24px;
