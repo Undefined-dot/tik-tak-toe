@@ -1,4 +1,6 @@
 <script setup lang="ts">
+    import Button from '~/components/Button.vue';
+    
     const origin = ref({x:0, y:0}) 
     const position = ref({x:0, y:0})
 
@@ -77,14 +79,11 @@
             <h1>Login</h1>
             <p>please sign in to continue</p>
        </div>
-       
-       <button type="submit">
-          <div class="effect"></div>
+       <Button text="sign up with google" >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M23.044 9.80788H11.9414V14.4092H18.3307C17.736 17.3332 15.2467 19.0132 11.9414 19.0132C11.0165 19.0148 10.1004 18.8338 9.24559 18.4805C8.39082 18.1273 7.6142 17.6088 6.96027 16.9547C6.30633 16.3006 5.78796 15.5239 5.43487 14.6691C5.08178 13.8142 4.90093 12.8981 4.90269 11.9732C4.9011 11.0484 5.08209 10.1325 5.43525 9.27777C5.78842 8.42308 6.30682 7.64652 6.96074 6.9926C7.61465 6.33869 8.39122 5.82028 9.2459 5.46712C10.1006 5.11395 11.0166 4.93297 11.9414 4.93455C13.62 4.93455 15.1374 5.53055 16.328 6.50522L19.7947 3.03988C17.6827 1.19855 14.9747 0.0625507 11.9414 0.0625507C10.3758 0.0579745 8.82471 0.362964 7.37742 0.959977C5.93012 1.55699 4.61514 2.43425 3.50809 3.54129C2.40105 4.64833 1.52379 5.96332 0.926778 7.41062C0.329765 8.85791 0.0247754 10.409 0.0293516 11.9746C0.0245984 13.5402 0.329467 15.0913 0.926417 16.5387C1.52337 17.9861 2.40062 19.3011 3.5077 20.4082C4.61478 21.5153 5.92983 22.3925 7.37721 22.9895C8.82459 23.5864 10.3757 23.8913 11.9414 23.8866C17.8974 23.8866 23.3134 19.5546 23.3134 11.9746C23.3134 11.2706 23.2054 10.5119 23.044 9.80788Z"/>
           </svg>
-          <p>sign up with google</p>
-        </button>
+       </Button>
         <p class="account">Already an account ?</p>
     </div>
   </div>
@@ -139,60 +138,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-
-  button {
-    width: 100%;
-    position: relative;
-    background-color: var(--secondary);
-    color: white;
-    cursor: pointer;
-    margin: 24px 0 8px 0;
-    border: 1px solid #B4BDC7;
-    padding: 16px 4px;
-    border-radius: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all .8s ease-out;
-  }
-
-  .effect {
-    position: absolute;
-    top: 0;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    z-index:0;
-    background-color:  white;
-    border-radius: 40px;
-    clip-path: circle(0%);
-    transition: all .5s ease-in-out;
-  }
-
-  button:hover {
-    background-color: #fff;
-    color: var(--secondary);
-    
-  }
-  button:hover .effect {
-    clip-path: circle(100%);
-  }
-  button:hover svg {
-    fill: var(--secondary) !important;
-  }
-
-  button svg  {
-    position:relative; 
-    fill: #fff;
-    transition: all .8s ease-out;
-  }
-
-  button p {
-    position:relative; 
-    margin-left: 12px;
-    font-size: 16px;
   }
 
   .input-container input {
