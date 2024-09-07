@@ -2,7 +2,7 @@
 import Button from '~/components/Button.vue';
 
 let gameMode = ref("")
-let copied = ref(true)
+let copied = ref(false)
 let show = ref(false)
 
 function modifygamemode (event: Event) {
@@ -33,11 +33,12 @@ function copy () {
                             <div class="">
 
                             </div>
-                            <div @click="copy()">
-                                <img :style="{ display: copied === false ? 'none' : ''}" src="/public/copy.svg" alt="">
-                                <img :style="{ display: copied === true ? 'none' : ''}" src="/public/check.svg" alt="">
+                            <div style="padding: 0 10px;" @click.capture="copy()">
+                                <img :style="{ display: copied ? 'none' : ''}" src="/public/copy.svg" alt="">
+                                <img :style="{ display: !copied ? 'none' : ''}" src="/public/check.svg" alt="">
                             </div>
                         </div>
+                        <Button @click="show = false; copied = false" text="OK" />
                 </div>
         </div>
         <div class="container">
@@ -137,16 +138,11 @@ function copy () {
         border-radius: 24px;
         text-align: center;
         font-size: 1.5rem;
-        
+        padding: 0 16px;
         color: var(--secondary);
     }
-    .popcontainer {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
     .invitation {
-        width: 100%;
+        width: 95%;
         height: 50px;
         overflow: auto;
         background: #fff;
