@@ -1,39 +1,90 @@
 <script setup lang="ts">
 import Button from '~/components/Button.vue';
+import { useRouter, useRoute } from 'vue-router'
+import { useInsFetch } from '~/Hook/useInsfetch';
+import Close from '~/components/Close.vue';
 
-let gameMode = ref("")
-let copied = ref(false)
-let show = ref(false)
+const gameMode = ref(reactive({ mode: 'easy' }))
+const copied = ref(false)
+const show = ref(false)
+const errors = ref()
+
+const nuxtApp = useNuxtApp()
+
+
 
 function modifygamemode (event: Event) {
     let target = event.target as HTMLInputElement
 
     if (target) {
-        gameMode.value = target.value
+        gameMode.value.mode = target.value
     }
 }
 
 function handleClick () {
-    if (gameMode.value === "friends") {
+    errors.value = ""
+    const token = useCookie("user")
+    if (gameMode.value.mode === "friends") {
         show.value = true
+    } else if (gameMode.value.mode === "ai") {
+        const aiFetch = useInsFetch(
+            "https://703d-129-0-99-219.ngrok-free.app/launch-ia-game",
+            "POST",
+            {
+                "userToken": token.value,
+                "expireTokenTime": 0,
+                "gameId": ""
+            }
+        )
+        const { data, error } = aiFetch.fetch
+        if (error.value) {
+            errors.value = "something went wrong"
+            console.log("hello")
+        }
+        const donnees = data.value as any
+        if (donnees) {
+            console.log(donnees)
+            //window.location.href = donnees.redirect
+        }
     }
 }
 
-function copy () {
-    copied.value = true
-}
+watch(gameMode, (newMode, oldMode) => {
+    nuxtApp.provide('gameMode', newMode)
+})
+
+definePageMeta({
+    middleware: ["auth"]
+})
+
+onMounted(() => {
+    const route = useRoute()
+    const router = useRouter()
+  // Vérifier si l'URL a des query parameters
+  if (route.query.user_token) {
+    // Construire une nouvelle URL sans les query parameters
+    const cleanPath = route.path  // Cette valeur sera 'example.com/product'
+
+    // Remplacer l'URL actuelle par l'URL nettoyée sans query params
+    router.replace(cleanPath)
+    }
+  })
 
 </script>
 
 <template>
+    <div v-if="errors" class="error">
+        <Close @click="() => errors = undefined" width="16" height="16" intColor="#FFFFFF" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;" />
+        {{ errors }}
+    </div>
         <div class="popupwinner" v-if="show">
                 <div class="popcontainer">
                         <h1>Invite your friends</h1>
-                        <div @click="copy()" class="invitation">
+                        <div class="invitation">
                             <div class="">
 
                             </div>
-                            <div style="padding: 0 10px;" @click.capture="copy()">
+                            <div style="padding: 0 10px;" @click.capture="() => copied = true">
                                 <img :style="{ display: copied ? 'none' : ''}" src="/public/copy.svg" alt="">
                                 <img :style="{ display: !copied ? 'none' : ''}" src="/public/check.svg" alt="">
                             </div>
@@ -41,26 +92,26 @@ function copy () {
                         <Button @click="show = false; copied = false" text="OK" />
                 </div>
         </div>
-        <div class="container">
+        <div class="container2">
                 <h1>Select game mode</h1>
 
-                <div class="wrapper">
-                    <div :style="{background: gameMode === 'ai' ? '#4B6A86' : '#39BBD3'}">
+                <div class="wrapper2">
+                    <div :style="{background: gameMode.mode === 'ai' ? '#4B6A86' : '#39BBD3'}">
                         <input @change="modifygamemode($event)" type="radio" name="game" value="ai" id="">
                         <p>with AI</p>
                     </div>
 
-                    <div :style="{background: gameMode === 'friends' ? '#4B6A86' : '#39BBD3'}">
+                    <div :style="{background: gameMode.mode === 'friends' ? '#4B6A86' : '#39BBD3'}">
                         <input @change="modifygamemode($event)" type="radio" name="game" value="friends" id="">
                         <p>with Friends</p>
                     </div>
 
-                    <div :style="{background: gameMode === 'online' ? '#4B6A86' : '#39BBD3'}">
+                    <div :style="{background: gameMode.mode === 'online' ? '#4B6A86' : '#39BBD3'}">
                         <input @change="modifygamemode($event)" type="radio" name="game" value="online" id="">
                         <p>Online</p>
                     </div>
 
-                    <div :style="{background: gameMode === 'passtoplay' ? '#4B6A86' : '#39BBD3'}">
+                    <div :style="{background: gameMode.mode === 'passtoplay' ? '#4B6A86' : '#39BBD3'}">
                         <input @change="modifygamemode($event)" type="radio" name="game" value="passtoplay" id="">
                         <p>Pass to Play</p>
                     </div>
@@ -71,7 +122,23 @@ function copy () {
 </template>
 
 <style>
-    .container {
+    .error {
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50%;
+        max-width: 500px;
+        display: flex;
+        align-items:center;
+        justify-content: center;
+        background-color: rgb(252, 97, 97);
+        color: white;
+        border-radius: 12px;
+        padding: 16px 8px;
+        margin: auto;
+    }
+    .container2 {
         width: 100%;
         height: 100vh;
         display: flex;
@@ -79,11 +146,11 @@ function copy () {
         align-items: center;
         justify-content: center;
     }
-    .container h1{
+    .container2 h1{
         margin-bottom: 24px;
         color: var(--secondary);
     }
-    .wrapper {
+    .wrapper2 {
         width: 416px;
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -93,7 +160,7 @@ function copy () {
         place-items: center;
         margin-bottom: 24px;
     }
-    .wrapper div {
+    .wrapper2 div {
         width: 200px;
         height: 200px;
         border-radius: 32px;
@@ -102,12 +169,12 @@ function copy () {
         justify-content: center;
         position: relative;
         color: #fff;
-        cursor: pointer;
     }
-    .wrapper div input {
+    .wrapper2 div input {
         position: absolute;
         padding: 0 32px;
         font-size: 24px;
+        cursor: pointer;
     }
     input {
         width: 200px;
