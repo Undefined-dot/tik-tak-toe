@@ -7,15 +7,15 @@ export function useInsFetch (url: string, method: any, data: any) {
         headers: {
             'Content-Type': 'application/json'   // Type de contenu JSON
         },
-        baseURL: "https://703d-129-0-99-219.ngrok-free.app",
+        baseURL: "https://126a-169-155-235-107.ngrok-free.app",
         onRequest({request, options}) {
+            console.log(request)
             if (options.headers) {
                 options.headers = options.headers || {
                      'Content-Type': 'application/json',
                      'Authorization': `Bearer ${token}`
                 }
             }
-            console.log(request)
         },
         onResponse({ request, response, options }) {
                 console.log(response)

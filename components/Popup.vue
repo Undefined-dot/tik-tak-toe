@@ -1,20 +1,20 @@
 <template>
-    <div v-if="checkVictory('X', victorygrid) || checkVictory('O', victorygrid) || drawverification(player)" class="popupwinner">
-        <div v-if="checkVictory('X', victorygrid)" class="popcontainer">
+    <div v-if="winnerX || winnerO || draw" class="popupwinner">
+        <div v-if="winnerX" class="popcontainer">
             <h1>The winner is</h1>
             <div>
                 <img src="/public/crossx.svg" width="200" height="200" alt="cross" />
             </div>
             <Button @click="reload" text="OK" />
         </div>
-        <div v-else-if="checkVictory('O', victorygrid)" class="popcontainer">
+        <div v-else-if="winnerO" class="popcontainer">
             <h1>The winner is</h1>
             <div>
                 <img src="/public/ellipse.svg" width="150" height="150" alt="cross" />
             </div>
             <Button @click="reload" text="OK" />
         </div>
-        <div v-else class="popcontainer">
+        <div v-else-if="draw" class="popcontainer">
             <h1>DRAW!</h1>
             <div style="display: flex; align-items: center; justify-content: center;">
                 <img src="/public/crossx.svg" width="200" height="200" alt="cross" />
@@ -32,27 +32,24 @@ import Button from './Button.vue';
 
 // Déclaration des props dans un seul appel
 defineProps({
-    checkVictory: {
-        type: Function as PropType<(text: string, victorygrid: string[][]) => boolean>,
+    winnerX: {
+        type: Boolean,
         required: true,
     },
-    drawverification: {
-        type: Function as PropType<(player: number[]) => boolean>,
+    winnerO: {
+        type: Boolean,
         required: true,
     },
-    player: {
-        type: Array as () => number[],
+    draw: {
+        type: Boolean,
         required: true,
     },
-    victorygrid: {
-        type: Array as () => string[][],
-        required: true,
-    }
 });
 
 function reload () {
     window.location.reload();
 }
+
 </script>
 
 

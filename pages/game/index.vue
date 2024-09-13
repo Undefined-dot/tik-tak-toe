@@ -1,23 +1,44 @@
 <script setup lang="ts">
     import { useCanvas } from '~/Hook/useCanvas';
-    import Button from '~/components/Button.vue';
-    import Popup from '~/components/Popup.vue';
+    import { usePasstoplay } from '~/Hook/useCanvas';
+    import { playWithAi } from '~/Hook/useCanvas';
 
-    const { 
-        checkVictory, 
-        Draw, 
-        position, 
-        drawverification, 
-        canvas, 
-        victorygrid,
-        player
-    } = useCanvas()
+    //onst mode = sessionStorage.getItem("mode")
+    //const id = sessionStorage.getItem("gameId")
+    const canvas = ref<HTMLCanvasElement>()
+    const winnerX = ref(false)
+    const winnerO = ref(false)
+    const draw = ref(false)
+
+    let Play = ref<usePasstoplay>()
+    const scoreTacker = ref({})
+
+    onMounted(() => {
+        if (canvas.value) {
+            Play.value = new playWithAi(
+                canvas.value, 
+                canvas.value.offsetWidth / 3, 
+                canvas.value.offsetWidth / 3,
+                100, 80
+            )
+        }
+    })
 
     const scoreX = ref(0)
 
     const scoreO = ref(0)
 
-    function score (score: globalThis.Ref<number>, value: string) {
+    watch (scoreTacker, (newValue, oldValue) => {
+        if (newValue.tours === "AI") {
+            setTimeout(() => {
+                 Play.value.fetchAI() // requette pour charger les donnees
+                newValue.tours = "human"
+            }, 3000);
+            console.log(newValue.tours)
+        }
+    })
+
+    /*function score (score: globalThis.Ref<number>, value: string) {
         if (!sessionStorage.getItem(value)) {
                 score.value++
                 sessionStorage.setItem(value, `${score.value}`);
@@ -35,16 +56,16 @@
         window.location.reload();
     }
 
-    watch(victorygrid.value, (newValue, oldValue) => {
-            if (checkVictory('X', newValue)) {
-                    score(scoreX, "scoreX")
-            } else if (checkVictory('O', newValue)) {
-                score(scoreO, "scoreO")
+    watch(scoreTacker, (newValue, oldValue) => {
+            if (Play.value.checkVictory('X', scoreTacker.value.victorygrid)) {
+                winnerX.value = Play.value.checkVictory('X', scoreTacker.value.victorygrid)
+                score(scoreX, "scoreX")
+            } else if (Play.value.checkVictory('O', scoreTacker.value.victorygrid)) {
+                winnerO.value = PlplayWithAi
             }
     })
 
     onMounted(() => {
-        Draw()
         if (sessionStorage.getItem("scoreX")) {
             let savescore = sessionStorage.getItem("scoreX") as string
             scoreX.value = parseInt(savescore)
@@ -53,7 +74,7 @@
             let savescore = sessionStorage.getItem("scoreO") as string
             scoreO.value = parseFloat(savescore)
         }
-    })
+    })*/
 
     definePageMeta({
         middleware: ["auth"]
@@ -63,14 +84,13 @@
 
 <template>
     <div class="container">
-        <canvas @click="($event: MouseEvent) => position($event)" ref="canvas" width="390" height="390">
+        <canvas @click="($event: MouseEvent) => scoreTacker = Play?.position($event)" ref="canvas" width="390" height="390">
 
         </canvas>
-        <Popup  :checkVictory="checkVictory"
-                :drawverification="drawverification"
-                :player="player"
-                :victorygrid="victorygrid" 
-        />
+        <!--Popup  :winnerX="winnerX"
+                :winnerO="winnerO"
+                :draw="draw"
+        /-->
         <div class="wrapper">
             <div class="container-img">
                 <img src="/public/crossx.svg" width="200"  height="200" alt="cross" />

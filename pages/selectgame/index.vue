@@ -1,25 +1,30 @@
 <script setup lang="ts">
-import Button from '~/components/Button.vue';
-import { useRouter, useRoute } from 'vue-router'
 import { useInsFetch } from '~/Hook/useInsfetch';
-import Close from '~/components/Close.vue';
 
-const gameMode = ref(reactive({ mode: 'easy' }))
-const copied = ref(false)
+
+const gameMode = ref({ mode: '' })
 const show = ref(false)
 const errors = ref()
 
-const nuxtApp = useNuxtApp()
 
-
-
-function modifygamemode (event: Event) {
-    let target = event.target as HTMLInputElement
-
-    if (target) {
-        gameMode.value.mode = target.value
-    }
-}
+const gameTab = [
+    {
+        label: "with AI",
+        mode: "ai"
+    },
+    {
+        label: "with Friends",
+        mode: "friends"
+    },
+    {
+        label: "Online",
+        mode: "online"
+    },
+    {
+        label: "Pass to Play",
+        mode: "passtoplay"
+    },
+]
 
 function handleClick () {
     errors.value = ""
@@ -28,7 +33,7 @@ function handleClick () {
         show.value = true
     } else if (gameMode.value.mode === "ai") {
         const aiFetch = useInsFetch(
-            "https://703d-129-0-99-219.ngrok-free.app/launch-ia-game",
+            "https://126a-169-155-235-107.ngrok-free.app/launch-ia-game",
             "POST",
             {
                 "userToken": token.value,
@@ -39,18 +44,21 @@ function handleClick () {
         const { data, error } = aiFetch.fetch
         if (error.value) {
             errors.value = "something went wrong"
-            console.log("hello")
         }
-        const donnees = data.value as any
-        if (donnees) {
-            console.log(donnees)
-            //window.location.href = donnees.redirect
+        if (data.value) {
+            let datas = data.value as any
+            const cookie = useCookie("user", {
+                maxAge: 3600,
+            })
+            cookie.value =  datas.token
+            window.location.href = datas.url
+            sessionStorage.setItem("gameId", datas.id);
         }
     }
 }
 
-watch(gameMode, (newMode, oldMode) => {
-    nuxtApp.provide('gameMode', newMode)
+watch(gameMode.value, (newMode, oldMode) => {
+    sessionStorage.setItem("mode", newMode.mode);
 })
 
 definePageMeta({
@@ -77,48 +85,16 @@ onMounted(() => {
         <Close @click="() => errors = undefined" width="16" height="16" intColor="#FFFFFF" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;" />
         {{ errors }}
     </div>
-        <div class="popupwinner" v-if="show">
-                <div class="popcontainer">
-                        <h1>Invite your friends</h1>
-                        <div class="invitation">
-                            <div class="">
+    <PopupFriends :show="show" @hidde="(props) => show = props" />
+    <div class="container2">
+            <h1>Select game mode</h1>
 
-                            </div>
-                            <div style="padding: 0 10px;" @click.capture="() => copied = true">
-                                <img :style="{ display: copied ? 'none' : ''}" src="/public/copy.svg" alt="">
-                                <img :style="{ display: !copied ? 'none' : ''}" src="/public/check.svg" alt="">
-                            </div>
-                        </div>
-                        <Button @click="show = false; copied = false" text="OK" />
-                </div>
-        </div>
-        <div class="container2">
-                <h1>Select game mode</h1>
+            <div class="wrapper2">
+                <Radio v-for="item in gameTab" :key="item.label" :label="item.label" :mode="item.mode" :gamemode="gameMode.mode" @changegamemode="(props: string) => gameMode.mode = props"/>
+            </div>
 
-                <div class="wrapper2">
-                    <div :style="{background: gameMode.mode === 'ai' ? '#4B6A86' : '#39BBD3'}">
-                        <input @change="modifygamemode($event)" type="radio" name="game" value="ai" id="">
-                        <p>with AI</p>
-                    </div>
-
-                    <div :style="{background: gameMode.mode === 'friends' ? '#4B6A86' : '#39BBD3'}">
-                        <input @change="modifygamemode($event)" type="radio" name="game" value="friends" id="">
-                        <p>with Friends</p>
-                    </div>
-
-                    <div :style="{background: gameMode.mode === 'online' ? '#4B6A86' : '#39BBD3'}">
-                        <input @change="modifygamemode($event)" type="radio" name="game" value="online" id="">
-                        <p>Online</p>
-                    </div>
-
-                    <div :style="{background: gameMode.mode === 'passtoplay' ? '#4B6A86' : '#39BBD3'}">
-                        <input @change="modifygamemode($event)" type="radio" name="game" value="passtoplay" id="">
-                        <p>Pass to Play</p>
-                    </div>
-                </div>
-
-                <Button @click="handleClick()" style="width: 416px;" text="Play" />
-        </div>
+            <Button @click="handleClick()" style="width: 416px;" text="Play" />
+    </div>
 </template>
 
 <style>
@@ -159,64 +135,5 @@ onMounted(() => {
         place-content: center;
         place-items: center;
         margin-bottom: 24px;
-    }
-    .wrapper2 div {
-        width: 200px;
-        height: 200px;
-        border-radius: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        color: #fff;
-    }
-    .wrapper2 div input {
-        position: absolute;
-        padding: 0 32px;
-        font-size: 24px;
-        cursor: pointer;
-    }
-    input {
-        width: 200px;
-        height: 200px;
-        opacity: 0;
-    }
-    .popupwinner {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom:0;
-        z-index: 1;
-        background-color: rgba(0, 0, 0, .3);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .popcontainer{
-        display: flex;
-        flex-direction: column;
-        justify-content: space-around;
-        align-items: center;
-        width:100%;
-        max-width: 390px;
-        height: 390px;
-        background-color: #e0e0e0;
-        border-radius: 24px;
-        text-align: center;
-        font-size: 1.5rem;
-        padding: 0 16px;
-        color: var(--secondary);
-    }
-    .invitation {
-        width: 95%;
-        height: 50px;
-        overflow: auto;
-        background: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        cursor: pointer;
     }
 </style>
