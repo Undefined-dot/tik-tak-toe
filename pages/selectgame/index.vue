@@ -1,68 +1,61 @@
 <script setup lang="ts">
-import { useInsFetch } from '~/Hook/useInsfetch';
 
+import { useCookies } from '~/Hook/useCookies';
+import { usegetDatas } from '~/Hook/useDatasgame';
+import { gameTab } from '~/assets/constants';
 
-const gameMode = ref({ mode: '' })
+// constants
+const token = useCookie("user")
+
+//methods
+const { setCookie } = useCookies()
+const { launch_ai_game } = usegetDatas(token)
+
+// references
+const gameMode = ref({ mode: 'passtoplay' })
 const show = ref(false)
 const errors = ref()
+const loading = ref(false)
+
+async function createAIGame () {
+    let router = useRouter()
+    let token = useCookie("user")
+
+    launch_ai_game.fetch
+    .then((res) => {
+        let datas = res.data.value as any
+        setCookie(datas.token)
+        router.push("/game")
+        sessionStorage.setItem("gameId", datas.id);
+    })
+
+    launch_ai_game.fetch.catch((error) => {
+        errors.value = "something went wrong"
+    })
+}
 
 
-const gameTab = [
-    {
-        label: "with AI",
-        mode: "ai"
-    },
-    {
-        label: "with Friends",
-        mode: "friends"
-    },
-    {
-        label: "Online",
-        mode: "online"
-    },
-    {
-        label: "Pass to Play",
-        mode: "passtoplay"
-    },
-]
-
+//fonction
 function handleClick () {
     errors.value = ""
-    const token = useCookie("user")
     if (gameMode.value.mode === "friends") {
         show.value = true
-    } else if (gameMode.value.mode === "ai") {
-        const aiFetch = useInsFetch(
-            "https://126a-169-155-235-107.ngrok-free.app/launch-ia-game",
-            "POST",
-            {
-                "userToken": token.value,
-                "expireTokenTime": 0,
-                "gameId": ""
-            }
-        )
-        const { data, error } = aiFetch.fetch
-        if (error.value) {
-            errors.value = "something went wrong"
-        }
-        if (data.value) {
-            let datas = data.value as any
-            const cookie = useCookie("user", {
-                maxAge: 3600,
-            })
-            cookie.value =  datas.token
-            window.location.href = datas.url
-            sessionStorage.setItem("gameId", datas.id);
-        }
+    } 
+    else if (gameMode.value.mode === "ai") {
+        loading.value = true
+        createAIGame ().then(() => {
+            loading.value = false
+        })
     }
 }
 
+// others
 watch(gameMode.value, (newMode, oldMode) => {
     sessionStorage.setItem("mode", newMode.mode);
 })
 
 definePageMeta({
-    middleware: ["auth"]
+    //middleware: ["auth"]
 })
 
 onMounted(() => {
@@ -93,7 +86,9 @@ onMounted(() => {
                 <Radio v-for="item in gameTab" :key="item.label" :label="item.label" :mode="item.mode" :gamemode="gameMode.mode" @changegamemode="(props: string) => gameMode.mode = props"/>
             </div>
 
-            <Button @click="handleClick()" style="width: 416px;" text="Play" />
+            <Button @click="handleClick()" style="width: 416px;" text="Play">
+                <Spinner v-if="loading"/>
+            </Button>
     </div>
 </template>
 

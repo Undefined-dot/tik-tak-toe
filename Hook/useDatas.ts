@@ -1,4 +1,4 @@
-export function useInsFetch (url: string, method: any, data: any) {
+export function useDatas (url: string, method: any, data: any) {
     const token = useCookie("user")
 
     const fetch = useFetch(url, {
@@ -9,7 +9,7 @@ export function useInsFetch (url: string, method: any, data: any) {
         },
         baseURL: "https://126a-169-155-235-107.ngrok-free.app",
         onRequest({request, options}) {
-            console.log(request)
+            console.log(options)
             if (options.headers) {
                 options.headers = options.headers || {
                      'Content-Type': 'application/json',

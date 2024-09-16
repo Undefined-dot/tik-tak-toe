@@ -9,6 +9,12 @@
     const svg = ref<null| HTMLElement>(null) // fait reference a un svg enfant de .back
     const body = ref<null | HTMLDivElement>(null)
 
+    const playground = [
+            [1, 2, 3],
+            [4, 5, 6],
+            [7, 8, 9]
+        ]
+
     /**
      * 
      * @param event MouseEvent
@@ -72,7 +78,7 @@
     }
 
     definePageMeta({
-      middleware: ["logout"]
+      middleware: (["logout"])
     })
 </script>
 

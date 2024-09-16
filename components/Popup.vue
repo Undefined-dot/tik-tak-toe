@@ -3,24 +3,24 @@
         <div v-if="winnerX" class="popcontainer">
             <h1>The winner is</h1>
             <div>
-                <img src="/public/crossx.svg" width="200" height="200" alt="cross" />
+                <Playerx intColor="#3284D2" extColor="#3284D2" width="200" height="200" />
             </div>
-            <Button @click="reload" text="OK" />
+            <Button @click="Reset()" text="OK" />
         </div>
         <div v-else-if="winnerO" class="popcontainer">
             <h1>The winner is</h1>
             <div>
-                <img src="/public/ellipse.svg" width="150" height="150" alt="cross" />
+                <Playero intColor="#e0e0e0" extColor="#39BBD3" width="150" height="150" />
             </div>
-            <Button @click="reload" text="OK" />
+            <Button @click="Reset()" text="OK" />
         </div>
         <div v-else-if="draw" class="popcontainer">
             <h1>DRAW!</h1>
             <div style="display: flex; align-items: center; justify-content: center;">
-                <img src="/public/crossx.svg" width="200" height="200" alt="cross" />
-                <img src="/public/ellipse.svg" width="150" height="150" alt="cross" />
+                <Playerx intColor="#3284D2" extColor="#3284D2" width="200" height="200" />
+                <Playero intColor="#e0e0e0" extColor="#39BBD3" width="150" height="150" />
             </div>
-            <Button @click="reload" text="OK" />
+            <Button @click="Reset()" text="OK" />
         </div>
     </div>
 </template>
@@ -44,6 +44,10 @@ defineProps({
         type: Boolean,
         required: true,
     },
+    Reset: {
+        type: Function,
+        required: true
+    }
 });
 
 function reload () {
